@@ -2,6 +2,7 @@ package store
 
 import (
 	"os"
+	"path/filepath"
 )
 
 var dir = "internal/data/"
@@ -12,7 +13,7 @@ func EnsureFile(fileDir string) (string, error) {
 			return "", err
 		}
 	}
-	filePath := dir + fileDir
+	filePath := filepath.Join(dir, fileDir)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		if err := os.WriteFile(filePath, []byte("{}"), 0644); os.IsNotExist(err) {
 			return "", err

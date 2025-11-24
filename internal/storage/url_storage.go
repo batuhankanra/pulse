@@ -25,7 +25,9 @@ func NewURL() (*URLStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(b, &store)
+	if len(b) > 0 {
+		_ = json.Unmarshal(b, &store.Data)
+	}
 	return store, nil
 }
 

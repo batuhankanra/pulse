@@ -35,6 +35,13 @@ func main() {
 				continue
 			}
 			fmt.Println("kaydedildi")
+		case "url-list":
+			urlStore, _ := storage.NewURL()
+			if err := urlStore.List(); err != nil {
+				fmt.Println("listelenme hatası")
+				continue
+			}
+
 		}
 
 	}
