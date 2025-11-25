@@ -11,11 +11,14 @@ import (
 func main() {
 
 	reader := bufio.NewReader(os.Stdin)
+	urlStore, _ := storage.NewStorage()
+
 	for {
 		fmt.Print("pulse>")
 
 		line, _ := reader.ReadString('\n')
 		line = strings.TrimSpace(line)
+
 		if line == "" {
 			continue
 		}
@@ -29,21 +32,17 @@ func main() {
 			}
 			key := parts[1]
 			value := parts[2]
-			urlStore, _ := storage.NewURL()
-			if err := urlStore.Add(key, value); err != nil {
+			if err := urlStore.AddURL(key, value); err != nil {
 				fmt.Printf("kaydedilmedi: %s", err)
 				continue
 			}
 			fmt.Println("kaydedildi")
 		case "url-list":
-			urlStore, _ := storage.NewURL()
-			if err := urlStore.List(); err != nil {
-				fmt.Println("listelenme hatası")
-				continue
+			if err := urlStore.ListURL(); err != nil {
+				fmt.Println("error", err)
 			}
 
 		}
 
 	}
-
 }
