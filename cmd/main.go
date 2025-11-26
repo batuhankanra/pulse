@@ -95,7 +95,45 @@ func main() {
 				continue
 			}
 			fmt.Println("✔ Header silindi")
+		case "body-add":
+			if len(parts) < 4 {
+				fmt.Println("Kullanım: body-add <setName> <key> <value>")
+				continue
+			}
+			setName := parts[1]
+			key := parts[2]
+			value := strings.Join(parts[3:], " ")
 
+			if err := store.AddBody(setName, key, value); err != nil {
+				fmt.Println("Kaydedilemedi:", err)
+				continue
+			}
+			fmt.Println("✔ body kaydedildi")
+
+		case "body-list":
+			store.ListBody()
+
+		case "body-del":
+			if len(parts) < 2 {
+				fmt.Println("Kullanım: body-del <setName> [key]")
+				continue
+			}
+
+			setName := parts[1]
+			if len(parts) == 2 {
+				if err := store.RemoveBody(setName, ""); err != nil {
+					fmt.Println("silinemdi:", err)
+					continue
+				}
+				fmt.Println("body set silindi")
+				continue
+			}
+			key := parts[2]
+			if err := store.RemoveBody(setName, key); err != nil {
+				fmt.Println("silinemedi:", err)
+				continue
+			}
+			fmt.Println("silindi")
 		// ---------------- HELP ----------------
 		case "help":
 			fmt.Println("Komutlar:")
@@ -127,6 +165,7 @@ func main() {
 				case "-body":
 					if i+1 < len(parts) {
 						body = parts[i+1]
+
 					}
 				}
 			}
@@ -150,11 +189,14 @@ func main() {
 			if headerSet != "" {
 				if set, ok := store.Headers[headerSet]; ok {
 					headers = set
+					fmt.Println(headers)
+
 				} else {
 					fmt.Println("header bulunamadı", headerSet)
 				}
 			}
-			if err := storage.SendRequest(finalURL, method, headers, body); err != nil {
+			err := storage.SendRequest(finalURL, method, headers, body)
+			if err != nil {
 				fmt.Println("istek hatası:", err)
 			}
 

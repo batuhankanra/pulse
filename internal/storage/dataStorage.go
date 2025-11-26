@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -111,16 +112,20 @@ func (st *Storage) RemoveBody(name, key string) error {
 	if st.Bodys[name] == nil {
 		return nil
 	}
-	delete(st.Bodys[name], key)
+	if key == "" {
+		delete(st.Bodys, name)
+	} else {
+		delete(st.Bodys[name], key)
+	}
 	return st.save()
 }
 func (st *Storage) ListBody() error {
 	if len(st.Bodys) == 0 {
-		fmt.Println("Kayıtlı url yok")
+		fmt.Println("Kayıtlı body yok")
 		return nil
 	}
-	fmt.Println("kayıtlı urller:")
-	for k, v := range st.Headers {
+	fmt.Println("kayıtlı Body:")
+	for k, v := range st.Bodys {
 		for vk, vv := range v {
 			fmt.Println(k, ":  ", vk, ":", vv)
 		}
@@ -145,8 +150,17 @@ func SendRequest(url, method string, headers map[string]string, body string) err
 		return err
 	}
 	defer resp.Body.Close()
+	fmt.Println("------------- RESPONSE ------------- ")
 	fmt.Println("Status:", resp.Status)
 	respBody, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(respBody))
+	var prettyJson bytes.Buffer
+	err = json.Indent(&prettyJson, respBody, "", " ")
+	if err == nil {
+		// JSON formatlı – pretty şekilde yaz
+		fmt.Println(prettyJson.String())
+	} else {
+		// JSON değil – düz yaz
+		fmt.Println(string(respBody))
+	}
 	return nil
 }
