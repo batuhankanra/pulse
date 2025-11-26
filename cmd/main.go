@@ -107,6 +107,56 @@ func main() {
 			fmt.Println("header-list")
 			fmt.Println("header-remove <setName> <key>")
 			fmt.Println("exit")
+		// ---------------- REQUEST ------------- req method url -header -body
+		case "req":
+			if len(parts) < 3 {
+				fmt.Println("Kullanım: req <method> <urlOrKey>/path [-header <headerSet>] [-body <jsonBody>]")
+				continue
+			}
+			method := strings.ToUpper(parts[1])
+			rawURL := parts[2]
+			var headerSet string
+			var body string
+
+			for i := 3; i < len(parts); i++ {
+				switch parts[i] {
+				case "-header":
+					if i+1 < len(parts) {
+						headerSet = parts[i+1]
+					}
+				case "-body":
+					if i+1 < len(parts) {
+						body = parts[i+1]
+					}
+				}
+			}
+			finalURL := rawURL
+			if strings.HasPrefix(rawURL, "!") {
+				parts2 := strings.SplitN(strings.TrimPrefix(rawURL, "!"), "/", 2)
+				key := parts2[0]
+				baseUrl, ok := store.URLs[key]
+				if !ok {
+					fmt.Println("Url bulunamadı")
+					continue
+				}
+				if len(parts2) == 2 {
+					finalURL = baseUrl + "/" + parts2[1]
+
+				} else {
+					finalURL = baseUrl
+				}
+			}
+			headers := map[string]string{}
+			if headerSet != "" {
+				if set, ok := store.Headers[headerSet]; ok {
+					headers = set
+				} else {
+					fmt.Println("header bulunamadı", headerSet)
+				}
+			}
+			if err := storage.SendRequest(finalURL, method, headers, body); err != nil {
+				fmt.Println("istek hatası:", err)
+			}
 
 		// ---------------- EXIT ----------------
 		case "exit":
