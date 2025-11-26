@@ -8,9 +8,9 @@ import (
 )
 
 type Storage struct {
-	Path    string            `json:"path"`
-	URLs    map[string]string `json:"url"`
-	Headers map[string]string `json:"headers"`
+	Path    string                       `json:"path"`
+	URLs    map[string]string            `json:"url"`
+	Headers map[string]map[string]string `json:"headers"`
 }
 
 func NewStorage() (*Storage, error) {
@@ -21,7 +21,7 @@ func NewStorage() (*Storage, error) {
 	st := &Storage{
 		Path:    path,
 		URLs:    map[string]string{},
-		Headers: map[string]string{},
+		Headers: map[string]map[string]string{},
 	}
 	b, err := os.ReadFile(path)
 	if err != nil {
@@ -35,13 +35,13 @@ func NewStorage() (*Storage, error) {
 		st.URLs = map[string]string{}
 	}
 	if st.Headers == nil {
-		st.Headers = map[string]string{}
+		st.Headers = map[string]map[string]string{}
 	}
 
 	return st, nil
 }
 func (st *Storage) save() error {
-	res, _ := json.MarshalIndent(st, "", " ")
+	res, _ := json.MarshalIndent(st, "", "  ")
 	return os.WriteFile(st.Path, res, 0644)
 }
 func (st *Storage) AddURL(name, newUrl string) error {
@@ -63,12 +63,19 @@ func (st *Storage) DeleteURL(name string) error {
 	delete(st.URLs, name)
 	return st.save()
 }
-func (st *Storage) AddHeader(name, headers string) error {
-	st.Headers[name] = headers
+func (st *Storage) AddHeader(name, key, value string) error {
+	if st.Headers[name] == nil {
+		st.Headers[name] = map[string]string{}
+	}
+	st.Headers[name][key] = value
 	return st.save()
+
 }
-func (st *Storage) RemoveHeader(name string) error {
-	delete(st.Headers, name)
+func (st *Storage) RemoveHeader(name, key string) error {
+	if st.Headers[name] == nil {
+		return nil
+	}
+	delete(st.Headers[name], key)
 	return st.save()
 }
 func (st *Storage) ListHeader() error {
@@ -78,7 +85,9 @@ func (st *Storage) ListHeader() error {
 	}
 	fmt.Println("kayıtlı urller:")
 	for k, v := range st.Headers {
-		fmt.Println(k, ":", v)
+		for vk, vv := range v {
+			fmt.Println(k, ":  ", vk, ":", vv)
+		}
 	}
 	return nil
 }
