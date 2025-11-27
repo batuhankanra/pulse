@@ -154,7 +154,7 @@ func main() {
 			method := strings.ToUpper(parts[1])
 			rawURL := parts[2]
 			var headerSet string
-			var body string
+			var bodyInput string
 
 			for i := 3; i < len(parts); i++ {
 				switch parts[i] {
@@ -164,18 +164,19 @@ func main() {
 					}
 				case "-body":
 					if i+1 < len(parts) {
-						body = parts[i+1]
+						bodyInput = strings.Join(parts[i+1:], " ")
+						i = len(parts)
 
 					}
 				}
 			}
 			finalURL := rawURL
-			if strings.HasPrefix(rawURL, "!") {
-				parts2 := strings.SplitN(strings.TrimPrefix(rawURL, "!"), "/", 2)
+			if rest, ok := strings.CutPrefix(rawURL, "!"); ok {
+				parts2 := strings.SplitN(rest, "/", 2)
 				key := parts2[0]
 				baseUrl, ok := store.URLs[key]
 				if !ok {
-					fmt.Println("Url bulunamadı")
+					fmt.Println("url bulunamadı")
 					continue
 				}
 				if len(parts2) == 2 {
@@ -189,13 +190,22 @@ func main() {
 			if headerSet != "" {
 				if set, ok := store.Headers[headerSet]; ok {
 					headers = set
-					fmt.Println(headers)
 
 				} else {
 					fmt.Println("header bulunamadı", headerSet)
 				}
 			}
-			err := storage.SendRequest(finalURL, method, headers, body)
+			finalBody := map[string]string{}
+			if bodyInput != "" {
+				if bodyMap, ok := store.Bodys[bodyInput]; ok {
+
+					finalBody = bodyMap
+				} else {
+					fmt.Println("header bulunamadı", bodyInput)
+				}
+
+			}
+			err := storage.SendRequest(finalURL, method, headers, finalBody)
 			if err != nil {
 				fmt.Println("istek hatası:", err)
 			}
@@ -204,7 +214,6 @@ func main() {
 		case "exit":
 			fmt.Println("Çıkılıyor...")
 			return
-
 		// ---------------- UNKNOWN COMMAND ----------------
 		default:
 			fmt.Println("Bilinmeyen komut:", command)
