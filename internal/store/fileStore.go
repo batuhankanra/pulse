@@ -9,7 +9,7 @@ var dir = "internal/data/"
 
 func EnsureFile(fileDir string) (string, error) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		if err := os.Mkdir(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
 			return "", err
 		}
 	}
