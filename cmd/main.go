@@ -93,12 +93,11 @@ func main() {
 			headers[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
 
 		}
-		resp, err := httpclient.Do(method, url, headers, "")
+		err := httpclient.Do(method, url, headers, "")
 		if err != nil {
 			fmt.Println("error:", err)
 			return
 		}
-		fmt.Println(resp)
 
 	default:
 		usage()
