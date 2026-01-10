@@ -123,7 +123,67 @@ func main() {
 		cfg.Headers[id][key] = val
 		config.Save(cfg)
 		fmt.Println("updated header:", key, "->", val)
+	case "body-add":
+		if len(os.Args) < 5 {
+			fmt.Println("usage: pulse body-add <id> <key> <value>")
+			return
+		}
 
+		id := os.Args[2]
+		key := os.Args[3]
+		val := os.Args[4]
+
+		cfg, _ := config.Load()
+
+		if cfg.Body[id] == nil {
+			cfg.Body[id] = make(map[string]string)
+		}
+
+		cfg.Body[id][key] = val
+		config.Save(cfg)
+
+		fmt.Println("added body field:", id, key, "->", val)
+
+	case "body-list":
+		cfg, _ := config.Load()
+		if len(cfg.Body) == 0 {
+			fmt.Println("{}")
+			return
+		}
+		b, err := json.MarshalIndent(cfg.Body, "", "  ")
+		if err != nil {
+			fmt.Println("error:", err)
+			return
+		}
+		fmt.Println(string(b))
+
+	case "body-del":
+		if len(os.Args) < 3 {
+			fmt.Println("usage: pulse body-del <key>")
+			return
+		}
+		id := os.Args[2]
+		cfg, _ := config.Load()
+		delete(cfg.Body, id)
+		config.Save(cfg)
+		fmt.Println("Removed body:", id)
+
+	case "body-set":
+		if len(os.Args) < 4 {
+			fmt.Println("usage: pulse body-set <key> \"body: Value\"")
+			return
+		}
+		id := os.Args[2]
+		key := os.Args[3]
+		val := os.Args[4]
+		cfg, _ := config.Load()
+		if _, ok := cfg.Body[key]; !ok {
+			fmt.Println("not found:", key)
+			return
+		}
+		cfg.Headers[id][key] = val
+		config.Save(cfg)
+		fmt.Println("updated body:", key, "->", val)
 	case "req":
 		handlers.Req(os.Args[1:])
 
