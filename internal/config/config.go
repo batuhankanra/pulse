@@ -23,7 +23,7 @@ func Load() (*models.Config, error) {
 	}
 	cfg := &models.Config{
 		URLs:    map[string]string{},
-		Headers: map[string]string{},
+		Headers: map[string]map[string]string{},
 	}
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		return cfg, err
