@@ -8,21 +8,42 @@ import (
 	"github.com/batuhankanra/pulse.git/internal/models"
 )
 
-func LoadConfig() (*models.Config, error) {
-	home, _ := os.UserHomeDir()
-	path := filepath.Join(home, ".pulse.json")
+func path() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, ".pulse.json"), nil
+}
 
+func Load() (*models.Config, error) {
+	p, err := path()
+	if err != nil {
+		return nil, err
+	}
 	cfg := &models.Config{
 		URLs:    map[string]string{},
 		Headers: map[string]string{},
 	}
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return cfg, nil
+	if _, err := os.Stat(p); os.IsNotExist(err) {
+		return cfg, err
 	}
-	b, err := os.ReadFile(path)
+	b, err := os.ReadFile(p)
 	if err != nil {
 		return nil, err
 	}
 	json.Unmarshal(b, cfg)
 	return cfg, nil
+}
+
+func Save(cfg *models.Config) error {
+	p, err := path()
+	if err != nil {
+		return err
+	}
+	b, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(p, b, 0644)
 }
