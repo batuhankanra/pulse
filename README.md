@@ -42,7 +42,7 @@ API testleri, debug, otomasyon ve script’ler içinde kolayca kullanılabilecek
    ' ' (Tek tırnak)             PowerShell'de @ kullanırken tırnak içine alın
 
 - Örnekler:
-   pulse url-add api https://api.example.com
+   pulse url-add api https://jsonplaceholder.typicode.com
    pulse header-add auth Authorization 'Bearer 123'
    pulse body-add login user admin
    pulse req get :api/users             (URL sonuna path ekleme)
