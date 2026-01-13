@@ -2,6 +2,16 @@
 
 Pulse, terminal üzerinden hızlı ve konfigüre edilebilir HTTP istekleri göndermenizi sağlayan modern bir CLI aracıdır.
 
+## 📥 İndir ve Kullan (Kurulumsuz)
+
+Go yüklü değilse, [Releases](../../releases) sayfasından işletim sisteminize uygun olan dosyayı indirin:
+
+1. İndirdiğiniz dosyanın adını `pulse` (veya `pulse.exe`) olarak değiştirin.
+2. Dosyayı sistem yolunuza (PATH) ekleyin veya bulunduğu klasörde terminali açın.
+3. Çalıştığını doğrulamak için:
+   ```powershell
+   ./pulse --help
+
 ## 🛠 Kullanım
 
 ### Komutlar
