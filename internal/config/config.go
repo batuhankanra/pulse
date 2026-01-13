@@ -13,7 +13,7 @@ func path() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(home, ".pulse.json"), nil
+	return filepath.Join(home, ".pulse-config.json"), nil
 }
 
 func Load() (*models.Config, error) {

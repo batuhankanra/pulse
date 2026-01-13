@@ -53,21 +53,6 @@ func main() {
 		config.Save(cfg)
 		fmt.Println("removed:", key)
 
-	case "url-update":
-		if len(os.Args) < 4 {
-			fmt.Println("usage: pulse url-set <key> <newBaseUrl>")
-			return
-		}
-		key := os.Args[2]
-		val := os.Args[3]
-		cfg, _ := config.Load()
-		if _, ok := cfg.URLs[key]; !ok {
-			fmt.Println("not found:", key)
-			return
-		}
-		cfg.URLs[key] = val
-		config.Save(cfg)
-		fmt.Println("updated:", key, "->", val)
 	case "header-add":
 		if len(os.Args) < 5 {
 			fmt.Println("usage: pulse header-add <id> <Header> <Value>")
@@ -107,22 +92,7 @@ func main() {
 		delete(cfg.Headers, key)
 		config.Save(cfg)
 		fmt.Println("Removed header:", key)
-	case "header-set":
-		if len(os.Args) < 4 {
-			fmt.Println("usage: pulse header-set <key> \"Header: Value\"")
-			return
-		}
-		id := os.Args[2]
-		key := os.Args[3]
-		val := os.Args[4]
-		cfg, _ := config.Load()
-		if _, ok := cfg.Headers[key]; !ok {
-			fmt.Println("not found:", key)
-			return
-		}
-		cfg.Headers[id][key] = val
-		config.Save(cfg)
-		fmt.Println("updated header:", key, "->", val)
+
 	case "body-add":
 		if len(os.Args) < 5 {
 			fmt.Println("usage: pulse body-add <id> <key> <value>")
@@ -168,22 +138,6 @@ func main() {
 		config.Save(cfg)
 		fmt.Println("Removed body:", id)
 
-	case "body-set":
-		if len(os.Args) < 4 {
-			fmt.Println("usage: pulse body-set <key> \"body: Value\"")
-			return
-		}
-		id := os.Args[2]
-		key := os.Args[3]
-		val := os.Args[4]
-		cfg, _ := config.Load()
-		if _, ok := cfg.Body[key]; !ok {
-			fmt.Println("not found:", key)
-			return
-		}
-		cfg.Headers[id][key] = val
-		config.Save(cfg)
-		fmt.Println("updated body:", key, "->", val)
 	case "req":
 		handlers.Req(os.Args[1:])
 
@@ -194,14 +148,33 @@ func main() {
 }
 
 func usage() {
-	fmt.Println("usage:")
-	fmt.Println("pulse url-add <key> <baseUrl>")
-	fmt.Println("pulse url-list")
-	fmt.Println("pulse url-rm <key>")
-	fmt.Println("pulse url-set <key> <newBaseUrl>")
-	fmt.Println("pulse req <method> <url> [headers...]")
-	fmt.Println("examples:")
-	fmt.Println("pulse url-add b https://httpbin.org")
-	fmt.Println("pulse req get !b/get")
+	fmt.Println("Pulse CLI - Hızlı HTTP İstemcisi")
+	fmt.Println("\nKullanım:")
+	fmt.Println("  pulse <komut> [argümanlar]")
 
+	fmt.Println("\nURL Yönetimi:")
+	fmt.Println("  url-add <key> <url>          Yeni bir URL kısayolu ekler")
+	fmt.Println("  url-list                     Tüm kayıtlı URL'leri listeler")
+	fmt.Println("  url-del <key>                Bir URL kısayolunu siler")
+
+	fmt.Println("\nHeader & Body Yönetimi:")
+	fmt.Println("  header-add <id> <k> <v>      Header grubuna veri ekler")
+	fmt.Println("  header-list                  Kayıtlı header gruplarını listeler")
+	fmt.Println("  body-add <id> <k> <v>        Body grubuna (JSON) veri ekler")
+	fmt.Println("  body-list                    Kayıtlı body gruplarını listeler")
+
+	fmt.Println("\nİstek Gönderme (Request):")
+	fmt.Println("  req <method> <url> [opts]    HTTP isteği gönderir")
+
+	fmt.Println("\nİpucu (Semboller):")
+	fmt.Println("  : veya @                     Config'den veri çekmek için kullanılır")
+	fmt.Println("  ' ' (Tek tırnak)             PowerShell'de @ kullanırken tırnak içine alın")
+
+	fmt.Println("\nÖrnekler:")
+	fmt.Println("  pulse url-add api https://api.example.com")
+	fmt.Println("  pulse header-add auth Authorization 'Bearer 123'")
+	fmt.Println("  pulse body-add login user admin")
+	fmt.Println("  pulse req get :api/users             (URL sonuna path ekleme)")
+	fmt.Println("  pulse req post :api/login :auth :login")
+	fmt.Println("  pulse req get google.com User-Agent:Pulse")
 }
