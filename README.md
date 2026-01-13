@@ -26,18 +26,11 @@ Pulse, terminal üzerinden hızlı ve konfigüre edilebilir HTTP istekleri gönd
 - **Path Ekleme**: `:api/users` kullanımı, `api` değerinin sonuna `/users` ekler.
 - **PowerShell Notu**: Windows PowerShell kullanıyorsanız `@` veya `:` içeren argümanları mutlaka tek tırnak içine alın: `'@a/1'`.
 
----
-## Örnekler:
-   pulse url-add api https://api.example.com
-   pulse header-add auth Authorization 'Bearer 123'
-   pulse body-add login user admin
-   pulse req get :api/users             (URL sonuna path ekleme)
-   pulse req post :api/login :auth :login
-   pulse req get google.com User-Agent:Pulse
+
 
 ```bash
 # 1. URL ve Auth Kaydet
-pulse url-add api [https://jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com)
+pulse url-add api https://jsonplaceholder.typicode.com
 pulse header-add auth Authorization 'Bearer 123'
 pulse body-add login user admin
 
